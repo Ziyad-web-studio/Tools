@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vector Forge - React Edition</title>
+    <title>Vector Forge - Unique Art Edition</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <script>
@@ -19,11 +18,12 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: { 
-                        darkBase: '#000000', 
                         glassCard: 'rgba(28, 28, 30, 0.65)', 
-                        brandBlue: '#0A84FF', /* Apple Official Blue */
+                        brandBlue: '#0A84FF', 
                         brandGreen: '#30D158',
-                        brandRed: '#FF453A'
+                        brandRed: '#FF453A',
+                        titaniumStart: '#E2E2E2',
+                        titaniumEnd: '#8E8E93'
                     },
                     animation: { 
                         'pop-in': 'popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
@@ -46,7 +46,6 @@
             background: url('https://4kwallpapers.com/images/wallpapers/ios-18-stock-6016x3384-15344.jpg') no-repeat center center fixed; 
             background-size: cover;
         }
-        /* Scrollbar Halus */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
@@ -60,38 +59,33 @@
         const { useState, useEffect, useRef } = React;
 
         function App() {
-            // --- STATE MANAGEMENT ---
+            // --- STATE ---
             const [apiKey, setApiKey] = useState('');
             const [status, setStatus] = useState('OFFLINE'); 
-            const [powerLevel, setPowerLevel] = useState(2); 
-            const [config, setConfig] = useState({ category: 'Social Media Set', quantity: 1 });
+            const [powerLevel, setPowerLevel] = useState(3); // Default ke Ultra buat Unik
+            const [config, setConfig] = useState({ category: 'Surreal Abstract', quantity: 1 });
             const [prompts, setPrompts] = useState([]);
             const [isGenerating, setIsGenerating] = useState(false);
-            
-            // State untuk Notifikasi
             const [showNotif, setShowNotif] = useState(false);
             const [notifClosing, setNotifClosing] = useState(false);
-            
             const resultsRef = useRef(null);
 
-            // --- 1. LOGIKA NOTIFIKASI (AUTO HILANG 5 DETIK) ---
+            // --- NOTIFIKASI AUTO CLOSE ---
             useEffect(() => {
                 let timer;
                 if (showNotif) {
                     setNotifClosing(false);
-                    timer = setTimeout(() => {
-                        handleCloseNotif();
-                    }, 5000); // 5000ms = 5 detik
+                    timer = setTimeout(() => handleCloseNotif(), 5000);
                 }
                 return () => clearTimeout(timer);
             }, [showNotif]);
 
             const handleCloseNotif = () => {
                 setNotifClosing(true);
-                setTimeout(() => setShowNotif(false), 500); // Tunggu animasi selesai
+                setTimeout(() => setShowNotif(false), 500);
             };
 
-            // --- 2. LOGIKA API KEY ---
+            // --- API KEY ---
             useEffect(() => {
                 const savedKey = localStorage.getItem('groqKey');
                 if (savedKey) { setApiKey(savedKey); validateKey(savedKey); }
@@ -103,21 +97,31 @@
                 if(val.startsWith('gsk_')) localStorage.setItem('groqKey', val);
             };
 
-            const validateKey = (key) => {
-                setStatus(key.trim().startsWith('gsk_') ? 'ONLINE' : 'OFFLINE');
-            };
+            const validateKey = (key) => setStatus(key.trim().startsWith('gsk_') ? 'ONLINE' : 'OFFLINE');
 
-            // --- 3. STRATEGI MODEL (3 LEVEL) ---
+            // --- STRATEGI MODEL (Fokus Kreativitas) ---
             const getModelStrategy = (level) => {
                 switch(parseInt(level)) {
-                    case 1: return { model: 'llama-3.1-8b-instant', desc: 'FAST', system: 'Create SIMPLE, FLAT vector prompts.' };
-                    case 2: return { model: 'llama-3.3-70b-versatile', desc: 'PRO', system: 'Create DETAILED, COMMERCIAL vector prompts.' };
-                    case 3: return { model: 'llama-3.3-70b-versatile', desc: 'ULTRA', system: 'Create HYPER-DETAILED, PREMIUM vector prompts with lighting.' };
+                    case 1: return { 
+                        model: 'llama-3.1-8b-instant', 
+                        desc: 'CLEAN', 
+                        system: 'You are an Art Director. Create a clean, minimalist, single-subject vector illustration prompt.' 
+                    };
+                    case 2: return { 
+                        model: 'llama-3.3-70b-versatile', 
+                        desc: 'VIBRANT', 
+                        system: 'You are a Creative Director. Create a unique, vibrant, commercial vector illustration prompt with double-exposure elements.' 
+                    };
+                    case 3: return { 
+                        model: 'llama-3.3-70b-versatile', 
+                        desc: 'AVANT-GARDE', 
+                        system: 'You are a Visionary Artist using Google Labs AI. Create a highly creative, surreal, never-seen-before vector masterpiece prompt. Combine unrelated concepts (e.g., cybernetics and biology). Focus on composition, lighting, and "wow" factor.' 
+                    };
                     default: return { model: 'llama-3.3-70b-versatile', desc: 'PRO', system: '' };
                 }
             };
 
-            // --- 4. GENERATE PROMPT ---
+            // --- GENERATE (Logic Baru untuk Uniqueness) ---
             const generatePrompts = async () => {
                 if (status === 'OFFLINE') return;
                 setIsGenerating(true);
@@ -129,8 +133,19 @@
 
                 for (let i = 0; i < config.quantity; i++) {
                     const seed = Math.floor(Math.random() * 999999);
-                    let userContent = `Create Vector Sticker Sheet Prompt for: ${config.category}. 
-                    Mandatory: White Background, Knolling Layout. Seed: ${seed}`;
+                    
+                    // Logic: Paksa AI buat gabungin konsep biar unik
+                    let userContent = `Create a prompt for a SINGLE UNIQUE VECTOR MASTERPIECE (Not a sticker sheet).
+                    Theme: ${config.category}.
+                    Style: Google Labs / Whisk Aesthetic (High fidelity, creative lighting).
+                    
+                    Instructions:
+                    1. Subject: Must be a creative fusion or a unique interpretation of the theme.
+                    2. Background: Pure White (Hex #FFFFFF) but with dynamic shadows on the subject.
+                    3. Vibe: Commercial yet artistic, suitable for high-end Adobe Stock.
+                    4. Technique: Vector style, clean lines, but with complex gradients/mesh.
+                    
+                    Make it distinct and never seen before. Seed: ${seed}`;
 
                     requests.push(
                         fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -139,8 +154,8 @@
                             body: JSON.stringify({
                                 model: strategy.model,
                                 messages: [{ role: "system", content: strategy.system }, { role: "user", content: userContent }],
-                                temperature: powerLevel === 3 ? 0.85 : 0.7,
-                                max_tokens: 500
+                                temperature: powerLevel === 3 ? 0.9 : 0.7, // Temp tinggi biar makin kreatif/halu
+                                max_tokens: 600
                             })
                         }).then(r => r.json())
                     );
@@ -151,7 +166,8 @@
                     const newPrompts = results.map((data) => {
                         if(data.error) return "Error: " + data.error.message;
                         let text = data.choices[0].message.content.replace(/"/g, "");
-                        return text + " --v 6.0 --no text watermark realistic shading";
+                        // Parameter buat Google Labs/Whisk biasanya lebih suka natural language, tapi kita kasih keyword teknis dikit
+                        return text + " --no sticker borders --vector style --white background --high commercial value";
                     });
                     setPrompts(newPrompts);
                     setShowNotif(true);
@@ -159,10 +175,7 @@
                 finally { setIsGenerating(false); }
             };
 
-            const scrollToResults = () => {
-                resultsRef.current?.scrollIntoView({ behavior: 'smooth' });
-                handleCloseNotif();
-            };
+            const scrollToResults = () => { resultsRef.current?.scrollIntoView({ behavior: 'smooth' }); handleCloseNotif(); };
 
             const copyText = (text, idx) => {
                 navigator.clipboard.writeText(text);
@@ -179,70 +192,44 @@
             return (
                 <div className="relative min-h-screen p-4 flex justify-center items-start pt-10 md:pt-20">
                     
-                    {/* NOTIFIKASI DINAMIS (Dynamic Island Style) */}
+                    {/* NOTIFIKASI */}
                     {showNotif && (
-                        <div 
-                            onClick={scrollToResults}
-                            className={`fixed top-6 z-50 bg-black border border-white/10 text-white px-6 py-3 rounded-[30px] shadow-2xl cursor-pointer flex items-center gap-3 backdrop-blur-xl ${notifClosing ? 'animate-pop-out' : 'animate-pop-in'}`}
-                        >
-                            <div className="w-8 h-8 bg-brandGreen rounded-full flex items-center justify-center text-black text-sm">
-                                <i className="fa-solid fa-check"></i>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Selesai</span>
-                                <span className="text-sm font-semibold">Hasil Siap! Tap di sini</span>
-                            </div>
+                        <div onClick={scrollToResults} className={`fixed top-6 z-50 bg-black border border-white/10 text-white px-6 py-3 rounded-[30px] shadow-2xl cursor-pointer flex items-center gap-3 backdrop-blur-xl ${notifClosing ? 'animate-pop-out' : 'animate-pop-in'}`}>
+                            <div className="w-8 h-8 bg-brandGreen rounded-full flex items-center justify-center text-black text-sm"><i className="fa-solid fa-check"></i></div>
+                            <div className="flex flex-col"><span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Masterpiece Ready</span><span className="text-sm font-semibold">Hasil Unik Siap! Tap di sini</span></div>
                         </div>
                     )}
 
                     <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10">
                         
-                        {/* PANEL KIRI (CONTROLS) */}
+                        {/* KIRI */}
                         <div className="md:col-span-4 lg:col-span-4">
                             <div className="bg-glassCard/80 backdrop-blur-xl border border-white/10 p-6 rounded-[32px] shadow-2xl sticky top-10 overflow-hidden">
-                                
                                 <div className="mb-8">
-                                    {/* JUDUL DENGAN WARNA PREMIUM APPLE STYLE (Titanium/Silver Gradient) */}
-                                    <h1 className="text-3xl font-bold tracking-tight mb-1 bg-clip-text text-transparent bg-gradient-to-br from-white via-slate-200 to-slate-400">
+                                    {/* APPLE STYLE TITANIUM GRADIENT TEXT */}
+                                    <h1 className="text-3xl font-bold tracking-tight mb-1 bg-clip-text text-transparent bg-gradient-to-br from-titaniumStart via-gray-300 to-titaniumEnd drop-shadow-sm">
                                         Vector Forge
                                     </h1>
-                                    <p className="text-sm text-gray-400 font-medium">React Powered Engine</p>
+                                    <p className="text-sm text-gray-400 font-medium tracking-wide">Unique Art Engine</p>
                                 </div>
 
                                 <div className="space-y-4 mb-8">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Groq API Key</label>
-                                        <div className="relative">
-                                            <input 
-                                                type="password" value={apiKey} onChange={handleKeyChange} placeholder="gsk_..." 
-                                                className="w-full bg-black/30 border border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brandBlue focus:ring-1 focus:ring-brandBlue outline-none transition"
-                                            />
-                                            <div className="absolute right-3 top-3 text-gray-500">
-                                                <i className="fa-solid fa-key"></i>
-                                            </div>
-                                        </div>
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Groq Key</label>
+                                        <input type="password" value={apiKey} onChange={handleKeyChange} placeholder="gsk_..." className="w-full bg-black/30 border border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brandBlue outline-none transition" />
                                     </div>
-                                    
                                     <div className={`w-full py-2.5 rounded-xl text-center font-bold text-xs tracking-wide transition-all ${status === 'ONLINE' ? 'bg-brandGreen/20 text-brandGreen border border-brandGreen/30' : 'bg-brandRed/20 text-brandRed border border-brandRed/30'}`}>
-                                        {status === 'ONLINE' ? 'SISTEM ONLINE' : 'OFFLINE / NO KEY'}
+                                        {status === 'ONLINE' ? 'ENGINE READY' : 'NO API KEY'}
                                     </div>
                                 </div>
 
                                 <div className="mb-8 space-y-2">
-                                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Power Level</label>
+                                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Creativity Mode</label>
                                     <div className="bg-black/30 p-1 rounded-2xl grid grid-cols-3 gap-1">
                                         {[1, 2, 3].map((level) => {
                                             const info = getModelStrategy(level);
                                             return (
-                                                <button
-                                                    key={level}
-                                                    onClick={() => setPowerLevel(level)}
-                                                    className={`py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${
-                                                        powerLevel === level 
-                                                        ? 'bg-gray-600 text-white shadow-lg' 
-                                                        : 'text-gray-400 hover:text-white'
-                                                    }`}
-                                                >
+                                                <button key={level} onClick={() => setPowerLevel(level)} className={`py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${powerLevel === level ? 'bg-gray-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}>
                                                     <span className="block mb-0.5">LVL {level}</span>
                                                     <span className="text-[9px] opacity-70 font-normal">{info.desc}</span>
                                                 </button>
@@ -253,96 +240,55 @@
 
                                 <div className="space-y-5 mb-8">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Kategori</label>
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Konsep Unik</label>
                                         <div className="relative">
-                                            <select 
-                                                value={config.category} onChange={(e) => setConfig({...config, category: e.target.value})}
-                                                className="w-full bg-black/30 border border-white/5 rounded-2xl px-4 py-3 text-sm appearance-none outline-none focus:border-brandBlue"
-                                            >
-                                                <option>Social Media Set</option>
-                                                <option>Business Icons</option>
-                                                <option>Cute Characters</option>
-                                                <option>Futuristic Tech</option>
-                                                <option>Floral Patterns</option>
+                                            <select value={config.category} onChange={(e) => setConfig({...config, category: e.target.value})} className="w-full bg-black/30 border border-white/5 rounded-2xl px-4 py-3 text-sm appearance-none outline-none focus:border-brandBlue">
+                                                <option>Surreal Abstract</option>
+                                                <option>Cyberpunk Nature</option>
+                                                <option>Minimalist Avatar</option>
+                                                <option>Retro Futurism</option>
+                                                <option>Organic Technology</option>
+                                                <option>Liquid Shapes</option>
                                             </select>
-                                            <div className="absolute right-4 top-3.5 text-gray-400 pointer-events-none text-xs">
-                                                <i className="fa-solid fa-chevron-down"></i>
-                                            </div>
+                                            <div className="absolute right-4 top-3.5 text-gray-400 pointer-events-none text-xs"><i className="fa-solid fa-chevron-down"></i></div>
                                         </div>
                                     </div>
-
                                     <div className="space-y-2">
-                                        <div className="flex justify-between px-1">
-                                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Jumlah Prompt</label>
-                                            <span className="text-xs font-bold text-brandBlue">{config.quantity}</span>
-                                        </div>
-                                        <input 
-                                            type="range" min="1" max="5" value={config.quantity}
-                                            onChange={(e) => setConfig({...config, quantity: parseInt(e.target.value)})}
-                                            className="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brandBlue"
-                                        />
+                                        <div className="flex justify-between px-1"><label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Variasi Ide</label><span className="text-xs font-bold text-brandBlue">{config.quantity}</span></div>
+                                        <input type="range" min="1" max="5" value={config.quantity} onChange={(e) => setConfig({...config, quantity: parseInt(e.target.value)})} className="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brandBlue" />
                                     </div>
                                 </div>
 
-                                <button 
-                                    onClick={generatePrompts}
-                                    disabled={status === 'OFFLINE' || isGenerating}
-                                    className={`w-full py-4 rounded-2xl font-bold text-[15px] text-white shadow-xl transition-all active:scale-95 ${
-                                        status === 'OFFLINE' || isGenerating
-                                        ? 'bg-gray-700 cursor-not-allowed opacity-50'
-                                        : 'bg-brandBlue hover:bg-blue-600'
-                                    }`}
-                                >
-                                    {isGenerating ? (
-                                        <span className="flex items-center justify-center gap-2"><i className="fa-solid fa-circle-notch fa-spin"></i> Processing...</span>
-                                    ) : (
-                                        <span className="flex items-center justify-center gap-2"><i className="fa-solid fa-bolt"></i> Generate</span>
-                                    )}
+                                <button onClick={generatePrompts} disabled={status === 'OFFLINE' || isGenerating} className={`w-full py-4 rounded-2xl font-bold text-[15px] text-white shadow-xl transition-all active:scale-95 ${status === 'OFFLINE' || isGenerating ? 'bg-gray-700 cursor-not-allowed opacity-50' : 'bg-brandBlue hover:bg-blue-600'}`}>
+                                    {isGenerating ? <span className="flex items-center justify-center gap-2"><i className="fa-solid fa-circle-notch fa-spin"></i> Brainstorming...</span> : <span className="flex items-center justify-center gap-2"><i className="fa-solid fa-fingerprint"></i> Ciptakan Karya Unik</span>}
                                 </button>
                             </div>
                         </div>
 
-                        {/* PANEL KANAN (HASIL) */}
+                        {/* KANAN */}
                         <div className="md:col-span-8 lg:col-span-8">
                             <div ref={resultsRef} className="space-y-4 min-h-[500px]">
                                 {prompts.length === 0 ? (
                                     <div className="h-full flex flex-col items-center justify-center bg-glassCard/30 backdrop-blur-md rounded-[32px] border border-white/5 p-10 text-center">
                                         <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 animate-pulse">
-                                            {/* LOGO REACT MUTER */}
                                             <i className="fa-brands fa-react text-5xl text-brandBlue animate-spin-slow"></i>
                                         </div>
-                                        <h3 className="text-xl font-bold text-white mb-2">React Engine Ready</h3>
-                                        <p className="text-sm text-gray-400 max-w-xs leading-relaxed">Menunggu perintah untuk meracik prompt vektor berkualitas tinggi.</p>
+                                        <h3 className="text-xl font-bold text-white mb-2">Google Whisk / Labs Mode</h3>
+                                        <p className="text-sm text-gray-400 max-w-xs leading-relaxed">Siap meracik prompt vektor tunggal yang unik, surealis, dan bernilai jual tinggi.</p>
                                     </div>
                                 ) : (
                                     prompts.map((prompt, idx) => (
                                         <div key={idx} className="bg-glassCard/80 backdrop-blur-xl border border-white/10 rounded-[28px] p-6 animate-fade-up hover:bg-glassCard transition group">
-                                            
                                             <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/5">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-[10px] font-bold bg-white/10 text-white px-3 py-1.5 rounded-full uppercase tracking-wider">
-                                                        #{idx + 1}
-                                                    </span>
-                                                    <span className={`text-[10px] font-bold px-2 py-1 rounded text-gray-400 uppercase`}>
-                                                        {getModelStrategy(powerLevel).desc}
-                                                    </span>
+                                                    <span className="text-[10px] font-bold bg-white/10 text-white px-3 py-1.5 rounded-full uppercase tracking-wider">Ide #{idx + 1}</span>
+                                                    <span className={`text-[10px] font-bold px-2 py-1 rounded text-gray-400 uppercase`}>{getModelStrategy(powerLevel).desc}</span>
                                                 </div>
-                                                {/* ICON REACT KECIL DI CARD */}
-                                                <i className="fa-brands fa-react text-gray-600 text-lg"></i>
+                                                <i className="fa-solid fa-gem text-gray-600 text-lg group-hover:text-brandBlue transition"></i>
                                             </div>
-                                            
-                                            <div className="bg-black/40 p-5 rounded-2xl font-mono text-[13px] text-gray-300 leading-relaxed mb-6 select-all border border-white/5">
-                                                {prompt}
-                                            </div>
-
+                                            <div className="bg-black/40 p-5 rounded-2xl font-mono text-[13px] text-gray-300 leading-relaxed mb-6 select-all border border-white/5">{prompt}</div>
                                             <div className="flex justify-end">
-                                                <button 
-                                                    id={`btn-copy-${idx}`}
-                                                    onClick={() => copyText(prompt, idx)}
-                                                    className="bg-white/10 hover:bg-white text-white hover:text-black px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 group-hover:shadow-lg"
-                                                >
-                                                    <i className="fa-regular fa-copy"></i> Copy Prompt
-                                                </button>
+                                                <button id={`btn-copy-${idx}`} onClick={() => copyText(prompt, idx)} className="bg-white/10 hover:bg-white text-white hover:text-black px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 group-hover:shadow-lg"><i className="fa-regular fa-copy"></i> Copy Prompt</button>
                                             </div>
                                         </div>
                                     ))
@@ -351,14 +297,10 @@
                         </div>
 
                     </div>
-                    
-                    <div className="fixed bottom-4 right-4 text-[10px] text-white/20 font-mono">
-                        Powered by React & Groq
-                    </div>
+                    <div className="fixed bottom-4 right-4 text-[10px] text-white/20 font-mono">React Engine • Titanium UI</div>
                 </div>
             );
         }
-
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
