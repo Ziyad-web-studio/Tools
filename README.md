@@ -1,51 +1,50 @@
-# ⚛️ Vector Forge - React Edition (Premium UI)
+# ⚛️ Vector Forge - Unique Art Edition
 
-**Powerful. Lightweight. Premium.**
+**Create The Unseen. Sell The Masterpiece.**
 
-Vector Forge adalah tool generator prompt Adobe Stock yang dioptimalkan untuk kecepatan, kemudahan, dan estetika premium. Versi final ini menggunakan engine **React 18**, background abstrak pilihan user, dan tipografi bergaya Apple Pro.
-
----
-
-## 🔥 Fitur Utama & Pembaruan Visual
-
-### 1. Premium Typography & Branding 💎
-- **Judul "Apple Style":** Warna judul "Vector Forge" telah diubah dari gradien neon standar menjadi **Gradien Silver/Titanium Premium** (`from-white via-slate-200 to-slate-400`). Ini memberikan kesan metalik, mahal, dan profesional seperti desain hardware Apple, menghilangkan kesan "AI generik".
-- **React Core:** Menggunakan React 18 untuk performa UI yang mulus. Logo React berputar digunakan sebagai indikator *idle* yang elegan.
-
-### 2. Background & UI Aesthetics 🎨
-- **Wallpaper Keren:** Menggunakan kembali background abstrak warna-warni beresolusi tinggi (gaya iOS 18) sesuai permintaan user, memberikan kedalaman visual yang menawan.
-- **Glassmorphism:** Panel transparan dengan efek blur yang kuat, sudut membulat besar, dan border tipis, menyatu sempurna dengan background.
-
-### 3. Smart Notification System 🔔
-- **Dynamic Island Style:** Notifikasi muncul di atas layar dengan animasi *pop-in* yang halus.
-- **Auto-Dismiss:** Notifikasi otomatis menghilang dalam **5 detik**.
-- **Tap to Scroll:** Klik notifikasi untuk langsung menuju hasil prompt.
-
-### 4. Three-Level Intelligence 🧠
-Sistem pemilihan model AI otomatis:
-- **LVL 1 (FAST):** Model ringan untuk hasil instan.
-- **LVL 2 (PRO):** Model standar untuk detail komersial.
-- **LVL 3 (ULTRA):** Model "God Mode" untuk detail tingkat tinggi.
+Vector Forge versi ini telah dirombak total dari sekadar pembuat "Sticker Sheet" menjadi **Generator Masterpiece Vektor Tunggal**. Dioptimalkan khusus untuk **Google Labs (Whisk/ImageFX)** yang membutuhkan prompt deskriptif dan kaya imajinasi.
 
 ---
 
-## 🛠️ Teknologi yang Dipakai
+## 🎨 Fitur Baru: Unique Art Focus
 
-* **Bahasa:** HTML5 + JavaScript (ES6+).
-* **Framework:** React 18 (via CDN).
-* **Styling:** Tailwind CSS (via CDN) dengan kustomisasi warna premium Apple.
-* **API:** Groq Cloud API.
+### 1. Single Masterpiece Logic 🖼️
+- **No More Stickers:** Logika "sticker pack/knolling" dihapus.
+- **Focus:** Prompt sekarang fokus pada **SATU subjek utama** dengan komposisi surealis, pencahayaan dramatis, dan konsep "Fusion" (penggabungan ide).
+- **Goal:** Menghasilkan gambar vektor yang belum pernah dibuat orang lain (High Uniqueness) untuk nilai jual maksimal di Adobe Stock.
+
+### 2. Apple Titanium UI 📱
+- **Judul Premium:** Warna teks "Vector Forge" menggunakan gradien **Titanium Silver** (`#E2E2E2` ke `#8E8E93`), memberikan kesan hardware Apple yang mahal dan solid. Bukan lagi warna neon "AI".
+- **React Logo:** Ikon idle menggunakan logo React yang berputar pelan, menggantikan logo buah.
+
+### 3. Three-Level Creativity 🧠
+Sistem level disesuaikan untuk tingkat "keanehan" dan keunikan:
+- **LVL 1 (CLEAN):** Desain minimalis, bersih, aman. Cocok untuk ikon korporat.
+- **LVL 2 (VIBRANT):** Desain komersial dengan warna berani dan elemen *double-exposure*.
+- **LVL 3 (AVANT-GARDE):** "God Mode" untuk Google Labs. AI dipaksa berimajinasi liar (Surreal, Cybernetic, Organic). Suhu kreativitas dinaikkan (Temperature 0.9).
+
+### 4. Smart Notifications 🔔
+- Notifikasi "Masterpiece Ready" muncul di atas layar.
+- Otomatis hilang dalam 5 detik.
+- Klik notifikasi untuk scroll ke hasil.
 
 ---
 
-## 🚀 Cara Penggunaan
+## 🛠️ Teknologi & Cara Pakai
 
-1.  **Buka File:** Klik ganda `index.html`.
-2.  **Masukkan API Key:** Paste Groq API Key (awalan `gsk_...`). Pastikan indikator berubah jadi **HIJAU (SISTEM ONLINE)**.
-3.  **Pilih Konfigurasi:** Atur Power Level, Kategori, dan Jumlah prompt.
-4.  **Generate:** Klik tombol Generate.
-5.  **Ambil Hasil:** Tunggu notifikasi muncul di atas, klik untuk melihat hasil, lalu copy prompt.
+* **Engine:** React 18 (Single File).
+* **API:** Groq Cloud (Llama 3.3 70B - Model paling cerdas untuk nulis prompt kreatif).
+* **Style:** Tailwind CSS (Custom Titanium Theme).
+
+### Cara Menggunakan:
+1.  **Buka File:** Klik `index.html`.
+2.  **API Key:** Masukkan Groq API Key (Indikator harus jadi **ONLINE**).
+3.  **Pilih Mode:**
+    * Gunakan **LVL 3 (AVANT-GARDE)** jika ingin hasil yang benar-benar unik dan aneh (bagus untuk Google Labs).
+4.  **Pilih Konsep:** Coba kategori seperti "Surreal Abstract" atau "Organic Technology".
+5.  **Generate:** Klik tombol "Ciptakan Karya Unik".
+6.  **Copy:** Salin prompt ke Google ImageFX/Whisk atau AI favorit lu.
 
 ---
 
-*Dibuat dengan standar desain premium untuk kreator profesional.* 🚀
+*Dibuat untuk kreator yang tidak ingin meniru, tapi menciptakan tren.* 🚀
