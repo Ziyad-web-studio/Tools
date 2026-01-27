@@ -1,6 +1,6 @@
 # ⚡ Vector Forge - Ultimate Edition
 
-**Developed by YOU (for US).**
+**Developed by ZIYAD (for YOU).**
 
 Yoo, selamat datang di **Vector Forge**. Ini adalah *tools* andalan gue (dan sekarang punya lu juga) buat *generate* prompt Adobe Stock tanpa pusing mikirin teknis yang ribet.
 
