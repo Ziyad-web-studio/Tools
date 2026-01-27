@@ -1,35 +1,31 @@
-# ⚛️ Vector Forge - React Edition (Final)
+# ⚛️ Vector Forge - React Edition (Premium UI)
 
-**Powerful. Lightweight. Safe.**
+**Powerful. Lightweight. Premium.**
 
-Vector Forge adalah tool generator prompt Adobe Stock yang dioptimalkan untuk kecepatan dan kemudahan. Versi final ini menggunakan engine **React 18** untuk performa UI yang mulus, dengan tampilan *glassmorphism* yang elegan dan background abstrak keren yang diminta user.
+Vector Forge adalah tool generator prompt Adobe Stock yang dioptimalkan untuk kecepatan, kemudahan, dan estetika premium. Versi final ini menggunakan engine **React 18**, background abstrak pilihan user, dan tipografi bergaya Apple Pro.
 
 ---
 
-## 🔥 Fitur Utama & Pembaruan
+## 🔥 Fitur Utama & Pembaruan Visual
 
-### 1. React Core Engine & Safe Branding ⚛️
-Kita menggunakan library **React 18** via CDN agar aplikasi tetap ringan (single file HTML) namun sangat responsif.
-- **State Management:** UI terupdate otomatis saat ada perubahan data (misal: status API key).
-- **Branding Aman:** Ikon Apple telah dihapus dan diganti dengan **Logo React** yang berputar elegan saat aplikasi *idle* (menunggu perintah).
+### 1. Premium Typography & Branding 💎
+- **Judul "Apple Style":** Warna judul "Vector Forge" telah diubah dari gradien neon standar menjadi **Gradien Silver/Titanium Premium** (`from-white via-slate-200 to-slate-400`). Ini memberikan kesan metalik, mahal, dan profesional seperti desain hardware Apple, menghilangkan kesan "AI generik".
+- **React Core:** Menggunakan React 18 untuk performa UI yang mulus. Logo React berputar digunakan sebagai indikator *idle* yang elegan.
 
-### 2. Smart Notification System 🔔
-Sistem notifikasi gaya "Dynamic Island" di bagian atas layar.
-- **Auto-Dismiss:** Notifikasi akan **otomatis menghilang sendiri dalam 5 detik** jika tidak diklik.
-- **Smooth Animation:** Animasi masuk (*pop-in*) dan keluar (*pop-out*) yang sangat halus.
-- **Tap to Scroll:** Klik notifikasi untuk langsung menuju ke hasil prompt.
+### 2. Background & UI Aesthetics 🎨
+- **Wallpaper Keren:** Menggunakan kembali background abstrak warna-warni beresolusi tinggi (gaya iOS 18) sesuai permintaan user, memberikan kedalaman visual yang menawan.
+- **Glassmorphism:** Panel transparan dengan efek blur yang kuat, sudut membulat besar, dan border tipis, menyatu sempurna dengan background.
 
-### 3. Three-Level Intelligence 🧠
-Sistem pemilihan model AI otomatis berdasarkan kebutuhan detail:
-- **LVL 1 (FAST):** Menggunakan model ringan (Llama 8B) untuk hasil instan, fokus pada bentuk simpel.
-- **LVL 2 (PRO):** Menggunakan model standar (Llama 70B) untuk detail komersial yang seimbang.
-- **LVL 3 (ULTRA):** Menggunakan model Llama 70B dengan instruksi khusus ("God Mode") untuk detail, pencahayaan, dan tekstur tingkat tinggi.
+### 3. Smart Notification System 🔔
+- **Dynamic Island Style:** Notifikasi muncul di atas layar dengan animasi *pop-in* yang halus.
+- **Auto-Dismiss:** Notifikasi otomatis menghilang dalam **5 detik**.
+- **Tap to Scroll:** Klik notifikasi untuk langsung menuju hasil prompt.
 
-### 4. Premium UI/UX 💎
-- **Background Keren:** Kembali menggunakan wallpaper abstrak warna-warni yang diminta user.
-- **Glassmorphism:** Panel transparan dengan efek blur, sudut membulat yang besar, dan border tipis.
-- **Responsif:** Layout otomatis menyesuaikan, 1 kolom di HP, 2 kolom di Desktop.
-- **Indikator Status Real-time:** Panel status berwarna Merah/Hijau yang langsung berubah saat API Key dimasukkan.
+### 4. Three-Level Intelligence 🧠
+Sistem pemilihan model AI otomatis:
+- **LVL 1 (FAST):** Model ringan untuk hasil instan.
+- **LVL 2 (PRO):** Model standar untuk detail komersial.
+- **LVL 3 (ULTRA):** Model "God Mode" untuk detail tingkat tinggi.
 
 ---
 
@@ -37,43 +33,19 @@ Sistem pemilihan model AI otomatis berdasarkan kebutuhan detail:
 
 * **Bahasa:** HTML5 + JavaScript (ES6+).
 * **Framework:** React 18 (via CDN).
-* **Styling:** Tailwind CSS (via CDN) dengan kustomisasi animasi dan warna.
-* **Compiler:** Babel Standalone (untuk memproses JSX di browser).
-* **API:** Groq Cloud API (Model Llama 3.1 & 3.3).
+* **Styling:** Tailwind CSS (via CDN) dengan kustomisasi warna premium Apple.
+* **API:** Groq Cloud API.
 
 ---
 
 ## 🚀 Cara Penggunaan
 
-Sangat mudah, tidak perlu install apa-apa, cukup browser.
-
-1.  **Buka File:**
-    Klik ganda file `index.html`. Aplikasi akan terbuka di browser default Anda dengan background abstrak yang keren.
-
-2.  **Masukkan API Key:**
-    * Paste **Groq API Key** Anda (berawalan `gsk_...`) di kolom kiri.
-    * Perhatikan indikator status: Jika berubah menjadi **HIJAU (SISTEM ONLINE)**, berarti aplikasi siap digunakan. Key akan tersimpan otomatis di browser Anda.
-
-3.  **Pilih Konfigurasi:**
-    * **Power Level:** Pilih tingkat detail yang diinginkan (1, 2, atau 3).
-    * **Kategori:** Pilih jenis vektor (Icon, Social Media, Pattern, dll).
-    * **Jumlah:** Tentukan berapa banyak prompt yang ingin dibuat sekaligus (1-5).
-
-4.  **Generate:**
-    Klik tombol **Generate**. Tombol akan menunjukkan status loading.
-
-5.  **Ambil Hasil:**
-    * Setelah selesai, notifikasi akan muncul di bagian atas layar.
-    * Klik notifikasi tersebut untuk *scroll* otomatis ke hasil prompt di panel kanan.
-    * Klik tombol **Copy Prompt** pada kartu hasil untuk menyalin teks ke clipboard.
+1.  **Buka File:** Klik ganda `index.html`.
+2.  **Masukkan API Key:** Paste Groq API Key (awalan `gsk_...`). Pastikan indikator berubah jadi **HIJAU (SISTEM ONLINE)**.
+3.  **Pilih Konfigurasi:** Atur Power Level, Kategori, dan Jumlah prompt.
+4.  **Generate:** Klik tombol Generate.
+5.  **Ambil Hasil:** Tunggu notifikasi muncul di atas, klik untuk melihat hasil, lalu copy prompt.
 
 ---
 
-## 📱 Kompatibilitas & Performa
-
-* **Sangat Ringan:** Hanya satu file HTML, tidak ada proses build atau instalasi server.
-* **Cross-Platform:** Berjalan mulus di Chrome, Safari, Edge, dan Firefox baik di Desktop maupun Mobile (Android/iOS).
-
----
-
-*Enjoy the forge, Bro!* 🚀
+*Dibuat dengan standar desain premium untuk kreator profesional.* 🚀
