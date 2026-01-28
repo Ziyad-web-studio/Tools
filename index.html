@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vector Forge - Unique Art Edition</title>
+    <title>Vector Forge - Smart Scroll</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -18,286 +18,294 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: { 
-                        glassCard: 'rgba(28, 28, 30, 0.65)', 
-                        brandBlue: '#0A84FF', 
-                        brandGreen: '#30D158',
-                        brandRed: '#FF453A',
-                        titaniumStart: '#E2E2E2',
-                        titaniumEnd: '#8E8E93'
+                        glass: 'rgba(20, 20, 22, 0.8)', 
+                        glassBorder: 'rgba(255, 255, 255, 0.12)',
+                        appleBlue: '#007AFF', 
+                        appleGreen: '#34C759',
+                        appleRed: '#FF3B30'
                     },
                     animation: { 
-                        'pop-in': 'popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                        'pop-out': 'popOut 0.5s ease-in forwards',
-                        'fade-up': 'fadeUp 0.5s ease-out',
-                        'spin-slow': 'spin 8s linear infinite' 
+                        'island-pop': 'islandPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'fade-out': 'fadeOut 0.3s ease-out forwards',
+                        'slide-up': 'slideUp 0.4s ease-out forwards'
                     },
-                    keyframes: { 
-                        popIn: { '0%': { transform: 'translateY(-150%) scale(0.5)', opacity: '0' }, '100%': { transform: 'translateY(0) scale(1)', opacity: '1' } },
-                        popOut: { '0%': { transform: 'translateY(0) scale(1)', opacity: '1' }, '100%': { transform: 'translateY(-150%) scale(0.5)', opacity: '0' } },
-                        fadeUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    keyframes: {
+                        islandPop: { '0%': { transform: 'translateY(-150%) scale(0.9)', opacity: '0' }, '100%': { transform: 'translateY(0) scale(1)', opacity: '1' } },
+                        fadeOut: { '0%': { opacity: '1', transform: 'translateY(0)' }, '100%': { opacity: '0', transform: 'translateY(-20px)' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Wallpaper Abstrak Keren Pilihan User */
         body {
-            background: url('https://4kwallpapers.com/images/wallpapers/ios-18-stock-6016x3384-15344.jpg') no-repeat center center fixed; 
+            background: #000 url('https://4kwallpapers.com/images/wallpapers/ios-18-stock-6016x3384-15344.jpg') no-repeat center center fixed; 
             background-size: cover;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar { width: 0px; }
     </style>
 </head>
-<body class="text-slate-200 min-h-screen selection:bg-brandBlue selection:text-white">
+<body class="text-white min-h-screen selection:bg-appleBlue selection:text-white antialiased">
 
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
+        const MODEL_ID = "llama-3.3-70b-versatile"; 
 
         function App() {
-            // --- STATE ---
             const [apiKey, setApiKey] = useState('');
             const [status, setStatus] = useState('OFFLINE'); 
-            const [powerLevel, setPowerLevel] = useState(3); // Default ke Ultra buat Unik
-            const [config, setConfig] = useState({ category: 'Surreal Abstract', quantity: 1 });
-            const [prompts, setPrompts] = useState([]);
-            const [isGenerating, setIsGenerating] = useState(false);
+            const [level, setLevel] = useState(2); 
+            const [subject, setSubject] = useState('Coffee Cup');
+            const [quantity, setQuantity] = useState(1);
+            
+            const [results, setResults] = useState([]);
+            const [isProcessing, setIsProcessing] = useState(false);
             const [showNotif, setShowNotif] = useState(false);
-            const [notifClosing, setNotifClosing] = useState(false);
+            const [closingNotif, setClosingNotif] = useState(false);
+            const [progress, setProgress] = useState(0);
+            
             const resultsRef = useRef(null);
 
-            // --- NOTIFIKASI AUTO CLOSE ---
+            // --- SMART SCROLL LOGIC ---
+            // Hanya scroll otomatis jika layar KECIL (Mobile/Tablet < 768px)
             useEffect(() => {
-                let timer;
-                if (showNotif) {
-                    setNotifClosing(false);
-                    timer = setTimeout(() => handleCloseNotif(), 5000);
+                if (results.length > 0) {
+                    if (window.innerWidth < 768) {
+                        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                    // Kalau di PC (>= 768px), diem aja.
                 }
-                return () => clearTimeout(timer);
-            }, [showNotif]);
+            }, [results]);
 
-            const handleCloseNotif = () => {
-                setNotifClosing(true);
-                setTimeout(() => setShowNotif(false), 500);
-            };
-
-            // --- API KEY ---
             useEffect(() => {
-                const savedKey = localStorage.getItem('groqKey');
-                if (savedKey) { setApiKey(savedKey); validateKey(savedKey); }
+                const key = localStorage.getItem('groqKey');
+                if (key) { setApiKey(key); setStatus('ONLINE'); }
             }, []);
 
-            const handleKeyChange = (e) => {
-                const val = e.target.value;
-                setApiKey(val); validateKey(val);
-                if(val.startsWith('gsk_')) localStorage.setItem('groqKey', val);
+            const saveKey = (e) => {
+                const k = e.target.value;
+                setApiKey(k);
+                if (k.startsWith('gsk_')) { setStatus('ONLINE'); localStorage.setItem('groqKey', k); }
+                else setStatus('OFFLINE');
             };
 
-            const validateKey = (key) => setStatus(key.trim().startsWith('gsk_') ? 'ONLINE' : 'OFFLINE');
-
-            // --- STRATEGI MODEL (Fokus Kreativitas) ---
-            const getModelStrategy = (level) => {
-                switch(parseInt(level)) {
-                    case 1: return { 
-                        model: 'llama-3.1-8b-instant', 
-                        desc: 'CLEAN', 
-                        system: 'You are an Art Director. Create a clean, minimalist, single-subject vector illustration prompt.' 
-                    };
-                    case 2: return { 
-                        model: 'llama-3.3-70b-versatile', 
-                        desc: 'VIBRANT', 
-                        system: 'You are a Creative Director. Create a unique, vibrant, commercial vector illustration prompt with double-exposure elements.' 
-                    };
-                    case 3: return { 
-                        model: 'llama-3.3-70b-versatile', 
-                        desc: 'AVANT-GARDE', 
-                        system: 'You are a Visionary Artist using Google Labs AI. Create a highly creative, surreal, never-seen-before vector masterpiece prompt. Combine unrelated concepts (e.g., cybernetics and biology). Focus on composition, lighting, and "wow" factor.' 
-                    };
-                    default: return { model: 'llama-3.3-70b-versatile', desc: 'PRO', system: '' };
-                }
+            const callAI = async (systemPrompt, userPrompt) => {
+                try {
+                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            model: MODEL_ID,
+                            messages: [{role: "system", content: systemPrompt}, {role: "user", content: userPrompt}],
+                            temperature: 0.6, max_tokens: 350
+                        })
+                    });
+                    const data = await res.json();
+                    if(data.error) throw new Error(data.error.message);
+                    return data.choices[0].message.content;
+                } catch (e) { throw e; }
             };
 
-            // --- GENERATE (Logic Baru untuk Uniqueness) ---
-            const generatePrompts = async () => {
-                if (status === 'OFFLINE') return;
-                setIsGenerating(true);
-                setShowNotif(false); 
-                setPrompts([]);
+            const generateSingleItem = async (index) => {
+                let approved = false;
+                let attempts = 0;
+                let styleDesc = "";
+                
+                if (level === 1) styleDesc = "Simple Icon, Geometric Shapes, Minimalist.";
+                if (level === 2) styleDesc = "Flat Vector Illustration, Commercial Standard, Clean.";
+                if (level === 3) styleDesc = "Niche Concept, High Precision, Strict Flat Style.";
 
-                const strategy = getModelStrategy(powerLevel);
-                const requests = [];
-
-                for (let i = 0; i < config.quantity; i++) {
+                while (!approved && attempts < 3) {
+                    attempts++;
                     const seed = Math.floor(Math.random() * 999999);
                     
-                    // Logic: Paksa AI buat gabungin konsep biar unik
-                    let userContent = `Create a prompt for a SINGLE UNIQUE VECTOR MASTERPIECE (Not a sticker sheet).
-                    Theme: ${config.category}.
-                    Style: Google Labs / Whisk Aesthetic (High fidelity, creative lighting).
+                    const genSystem = `You are a Strict Stock Vector Generator. Rules: Single Subject, Flat Vector, Solid Color, White Background. Forbidden: 3D, Realism, Shadows. Output: ONLY the prompt text.`;
+                    const genUser = `Create a prompt for: ${subject}. Style: ${styleDesc}. Seed: ${seed}`;
                     
-                    Instructions:
-                    1. Subject: Must be a creative fusion or a unique interpretation of the theme.
-                    2. Background: Pure White (Hex #FFFFFF) but with dynamic shadows on the subject.
-                    3. Vibe: Commercial yet artistic, suitable for high-end Adobe Stock.
-                    4. Technique: Vector style, clean lines, but with complex gradients/mesh.
-                    
-                    Make it distinct and never seen before. Seed: ${seed}`;
+                    let rawPrompt = "";
+                    try {
+                        rawPrompt = await callAI(genSystem, genUser);
+                        rawPrompt = rawPrompt.replace(/"/g, "");
+                    } catch (err) { return null; }
 
-                    requests.push(
-                        fetch("https://api.groq.com/openai/v1/chat/completions", {
-                            method: "POST",
-                            headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                model: strategy.model,
-                                messages: [{ role: "system", content: strategy.system }, { role: "user", content: userContent }],
-                                temperature: powerLevel === 3 ? 0.9 : 0.7, // Temp tinggi biar makin kreatif/halu
-                                max_tokens: 600
-                            })
-                        }).then(r => r.json())
-                    );
+                    // Silent Validation
+                    const valSystem = `You are a Strict Quality Control. Approve ONLY if: Flat Vector, Single Subject, White Background. Response: "APPROVED" or "REJECTED"`;
+                    const valResponse = await callAI(valSystem, `Check this: ${rawPrompt}`);
+
+                    if (valResponse.includes("APPROVED")) {
+                        approved = true;
+                        return rawPrompt + " --v 6.0 --no shadow gradient realism 3d text watermark";
+                    }
                 }
-
-                try {
-                    const results = await Promise.all(requests);
-                    const newPrompts = results.map((data) => {
-                        if(data.error) return "Error: " + data.error.message;
-                        let text = data.choices[0].message.content.replace(/"/g, "");
-                        // Parameter buat Google Labs/Whisk biasanya lebih suka natural language, tapi kita kasih keyword teknis dikit
-                        return text + " --no sticker borders --vector style --white background --high commercial value";
-                    });
-                    setPrompts(newPrompts);
-                    setShowNotif(true);
-                } catch (err) { alert("Error: " + err.message); } 
-                finally { setIsGenerating(false); }
+                return null;
             };
 
-            const scrollToResults = () => { resultsRef.current?.scrollIntoView({ behavior: 'smooth' }); handleCloseNotif(); };
+            const processQueue = async () => {
+                if (status === 'OFFLINE') return;
+                setIsProcessing(true);
+                setResults([]);
+                setShowNotif(false);
+                setClosingNotif(false);
+                setProgress(0);
 
-            const copyText = (text, idx) => {
-                navigator.clipboard.writeText(text);
-                const btn = document.getElementById(`btn-copy-${idx}`);
-                const originalText = btn.innerHTML;
-                btn.innerHTML = `<i class="fa-solid fa-check"></i> Disalin`;
-                btn.classList.add("bg-brandGreen", "text-white");
+                const promises = [];
+                for (let i = 0; i < quantity; i++) {
+                    promises.push(generateSingleItem(i).then(res => {
+                        if (res) {
+                            setResults(prev => [...prev, res]);
+                            setProgress(prev => prev + (100/quantity));
+                        }
+                    }));
+                }
+
+                await Promise.all(promises);
+
+                setIsProcessing(false);
+                setProgress(100);
+                
+                // Show Notif
+                setShowNotif(true);
                 setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.classList.remove("bg-brandGreen", "text-white");
-                }, 2000);
+                    setClosingNotif(true);
+                    setTimeout(() => setShowNotif(false), 300);
+                }, 3000);
+            };
+
+            const copyToClipboard = (text, id) => {
+                navigator.clipboard.writeText(text);
+                const btn = document.getElementById(id);
+                btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
+                btn.classList.add("text-appleGreen", "scale-110");
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fa-regular fa-copy"></i>`;
+                    btn.classList.remove("text-appleGreen", "scale-110");
+                }, 1500);
+            };
+
+            // Manual Scroll (buat user PC yang klik notif)
+            const handleNotifClick = () => {
+                resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
             };
 
             return (
-                <div className="relative min-h-screen p-4 flex justify-center items-start pt-10 md:pt-20">
+                <div className="flex justify-center min-h-screen pt-8 px-4 pb-20 font-sans">
                     
-                    {/* NOTIFIKASI */}
+                    {/* DYNAMIC ISLAND NOTIFICATION */}
                     {showNotif && (
-                        <div onClick={scrollToResults} className={`fixed top-6 z-50 bg-black border border-white/10 text-white px-6 py-3 rounded-[30px] shadow-2xl cursor-pointer flex items-center gap-3 backdrop-blur-xl ${notifClosing ? 'animate-pop-out' : 'animate-pop-in'}`}>
-                            <div className="w-8 h-8 bg-brandGreen rounded-full flex items-center justify-center text-black text-sm"><i className="fa-solid fa-check"></i></div>
-                            <div className="flex flex-col"><span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Masterpiece Ready</span><span className="text-sm font-semibold">Hasil Unik Siap! Tap di sini</span></div>
+                        <div onClick={handleNotifClick} 
+                            className={`fixed top-4 z-50 cursor-pointer ${closingNotif ? 'animate-fade-out' : 'animate-island-pop'}`}>
+                            <div className="bg-black border border-white/10 text-white px-5 py-3 rounded-[35px] flex items-center gap-4 shadow-2xl backdrop-blur-2xl">
+                                <div className="w-8 h-8 bg-appleGreen rounded-full flex items-center justify-center text-black text-sm shadow-[0_0_10px_rgba(52,199,89,0.4)]">
+                                    <i className="fa-solid fa-check"></i>
+                                </div>
+                                <div className="flex flex-col pr-2">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Success</span>
+                                    <span className="text-sm font-semibold">Prompt Ready</span>
+                                </div>
+                            </div>
                         </div>
                     )}
 
-                    <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10">
+                    <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-8">
                         
-                        {/* KIRI */}
-                        <div className="md:col-span-4 lg:col-span-4">
-                            <div className="bg-glassCard/80 backdrop-blur-xl border border-white/10 p-6 rounded-[32px] shadow-2xl sticky top-10 overflow-hidden">
+                        {/* LEFT PANEL */}
+                        <div className="md:col-span-5 lg:col-span-4 space-y-5">
+                            <div className="bg-glass backdrop-blur-2xl border border-glassBorder p-8 rounded-[40px] shadow-2xl sticky top-6 overflow-hidden relative">
+                                
                                 <div className="mb-8">
-                                    {/* APPLE STYLE TITANIUM GRADIENT TEXT */}
-                                    <h1 className="text-3xl font-bold tracking-tight mb-1 bg-clip-text text-transparent bg-gradient-to-br from-titaniumStart via-gray-300 to-titaniumEnd drop-shadow-sm">
-                                        Vector Forge
-                                    </h1>
-                                    <p className="text-sm text-gray-400 font-medium tracking-wide">Unique Art Engine</p>
+                                    <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Vector Forge</h1>
+                                    <p className="text-[10px] font-bold text-gray-500 tracking-[0.2em] uppercase">Stealth Agent Engine</p>
                                 </div>
 
-                                <div className="space-y-4 mb-8">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Groq Key</label>
-                                        <input type="password" value={apiKey} onChange={handleKeyChange} placeholder="gsk_..." className="w-full bg-black/30 border border-white/5 rounded-2xl px-4 py-3 text-sm focus:border-brandBlue outline-none transition" />
-                                    </div>
-                                    <div className={`w-full py-2.5 rounded-xl text-center font-bold text-xs tracking-wide transition-all ${status === 'ONLINE' ? 'bg-brandGreen/20 text-brandGreen border border-brandGreen/30' : 'bg-brandRed/20 text-brandRed border border-brandRed/30'}`}>
-                                        {status === 'ONLINE' ? 'ENGINE READY' : 'NO API KEY'}
-                                    </div>
-                                </div>
-
-                                <div className="mb-8 space-y-2">
-                                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Creativity Mode</label>
-                                    <div className="bg-black/30 p-1 rounded-2xl grid grid-cols-3 gap-1">
-                                        {[1, 2, 3].map((level) => {
-                                            const info = getModelStrategy(level);
-                                            return (
-                                                <button key={level} onClick={() => setPowerLevel(level)} className={`py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${powerLevel === level ? 'bg-gray-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}>
-                                                    <span className="block mb-0.5">LVL {level}</span>
-                                                    <span className="text-[9px] opacity-70 font-normal">{info.desc}</span>
-                                                </button>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-
-                                <div className="space-y-5 mb-8">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Konsep Unik</label>
-                                        <div className="relative">
-                                            <select value={config.category} onChange={(e) => setConfig({...config, category: e.target.value})} className="w-full bg-black/30 border border-white/5 rounded-2xl px-4 py-3 text-sm appearance-none outline-none focus:border-brandBlue">
-                                                <option>Surreal Abstract</option>
-                                                <option>Cyberpunk Nature</option>
-                                                <option>Minimalist Avatar</option>
-                                                <option>Retro Futurism</option>
-                                                <option>Organic Technology</option>
-                                                <option>Liquid Shapes</option>
-                                            </select>
-                                            <div className="absolute right-4 top-3.5 text-gray-400 pointer-events-none text-xs"><i className="fa-solid fa-chevron-down"></i></div>
+                                <div className="space-y-6">
+                                    {/* KEY */}
+                                    <div className="space-y-3">
+                                        <div className="relative group">
+                                            <input type="password" value={apiKey} onChange={saveKey} placeholder="Groq API Key (gsk_...)" 
+                                                className="w-full bg-black/30 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:border-appleBlue/50 outline-none text-white transition"/>
+                                            <div className="absolute right-5 top-4 text-gray-500"><i className="fa-solid fa-key"></i></div>
+                                        </div>
+                                        <div className={`py-3 rounded-2xl text-center text-[10px] font-bold tracking-[2px] uppercase border transition-all duration-500 ${status === 'ONLINE' ? 'bg-appleGreen/10 text-appleGreen border-appleGreen/20' : 'bg-appleRed/10 text-appleRed border-appleRed/20'}`}>
+                                            {status === 'ONLINE' ? (
+                                                <span className="flex items-center justify-center gap-2">
+                                                    <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-appleGreen opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-appleGreen"></span></span>
+                                                    System Online
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center justify-center gap-2"><span className="w-2 h-2 rounded-full bg-appleRed"></span> Disconnected</span>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between px-1"><label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Variasi Ide</label><span className="text-xs font-bold text-brandBlue">{config.quantity}</span></div>
-                                        <input type="range" min="1" max="5" value={config.quantity} onChange={(e) => setConfig({...config, quantity: parseInt(e.target.value)})} className="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brandBlue" />
+
+                                    {/* Subject */}
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-2">Subject</label>
+                                        <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} 
+                                            className="w-full bg-black/30 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:border-appleBlue/50 outline-none text-white"/>
+                                    </div>
+
+                                    {/* Controls */}
+                                    <div className="grid grid-cols-3 gap-2 bg-black/20 p-1.5 rounded-2xl">
+                                        {[1, 2, 3].map(l => (
+                                            <button key={l} onClick={() => setLevel(l)} 
+                                                className={`py-3 rounded-xl text-xs font-bold transition-all duration-300 ${level===l ? 'bg-gray-600/90 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}>
+                                                LVL {l}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="flex items-center justify-between bg-black/20 p-4 rounded-2xl">
+                                        <span className="text-xs font-bold text-gray-400 uppercase">Quantity</span>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-sm font-bold text-appleBlue">{quantity}</span>
+                                            <input type="range" min="1" max="5" value={quantity} onChange={(e)=>setQuantity(parseInt(e.target.value))} className="w-24 h-1 bg-gray-600 rounded-lg accent-appleBlue cursor-pointer"/>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <button onClick={generatePrompts} disabled={status === 'OFFLINE' || isGenerating} className={`w-full py-4 rounded-2xl font-bold text-[15px] text-white shadow-xl transition-all active:scale-95 ${status === 'OFFLINE' || isGenerating ? 'bg-gray-700 cursor-not-allowed opacity-50' : 'bg-brandBlue hover:bg-blue-600'}`}>
-                                    {isGenerating ? <span className="flex items-center justify-center gap-2"><i className="fa-solid fa-circle-notch fa-spin"></i> Brainstorming...</span> : <span className="flex items-center justify-center gap-2"><i className="fa-solid fa-fingerprint"></i> Ciptakan Karya Unik</span>}
-                                </button>
+                                <div className="mt-8 relative">
+                                    {isProcessing && <div className="absolute -top-3 left-0 w-full h-1 bg-gray-800 rounded-full overflow-hidden"><div className="h-full bg-appleBlue transition-all duration-300" style={{width: `${progress}%`}}></div></div>}
+                                    <button onClick={processQueue} disabled={status==='OFFLINE'||isProcessing}
+                                        className={`w-full py-4 rounded-2xl font-bold text-sm text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${status==='OFFLINE'||isProcessing ? 'bg-gray-800 opacity-50 cursor-not-allowed' : 'bg-appleBlue hover:bg-blue-500'}`}>
+                                        {isProcessing ? "GENERATING..." : "START FORGE"}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        {/* KANAN */}
-                        <div className="md:col-span-8 lg:col-span-8">
-                            <div ref={resultsRef} className="space-y-4 min-h-[500px]">
-                                {prompts.length === 0 ? (
-                                    <div className="h-full flex flex-col items-center justify-center bg-glassCard/30 backdrop-blur-md rounded-[32px] border border-white/5 p-10 text-center">
+                        {/* RIGHT PANEL */}
+                        <div className="md:col-span-7 lg:col-span-8">
+                            <div ref={resultsRef} className="space-y-4">
+                                {results.length === 0 ? (
+                                    <div className="h-[500px] flex flex-col items-center justify-center bg-glass/40 backdrop-blur-md rounded-[40px] border border-glassBorder text-center p-8">
                                         <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 animate-pulse">
-                                            <i className="fa-brands fa-react text-5xl text-brandBlue animate-spin-slow"></i>
+                                            {isProcessing ? <i className="fa-solid fa-circle-notch fa-spin text-4xl text-appleBlue"></i> : <i className="fa-solid fa-bolt text-4xl text-gray-600"></i>}
                                         </div>
-                                        <h3 className="text-xl font-bold text-white mb-2">Google Whisk / Labs Mode</h3>
-                                        <p className="text-sm text-gray-400 max-w-xs leading-relaxed">Siap meracik prompt vektor tunggal yang unik, surealis, dan bernilai jual tinggi.</p>
+                                        <h3 className="text-xl font-bold text-white">{isProcessing ? "Forging Prompts..." : "Ready to Forge"}</h3>
+                                        <p className="text-sm text-gray-500 max-w-xs mt-2 leading-relaxed">
+                                            {isProcessing ? "AI is generating and validating your prompts in parallel." : "Set your parameters and hit start."}
+                                        </p>
                                     </div>
                                 ) : (
-                                    prompts.map((prompt, idx) => (
-                                        <div key={idx} className="bg-glassCard/80 backdrop-blur-xl border border-white/10 rounded-[28px] p-6 animate-fade-up hover:bg-glassCard transition group">
-                                            <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/5">
+                                    results.map((prompt, idx) => (
+                                        <div key={idx} className="bg-glass backdrop-blur-xl border border-glassBorder rounded-[32px] p-8 animate-slide-up hover:border-white/20 transition shadow-2xl group">
+                                            <div className="flex justify-between items-center mb-5 pb-5 border-b border-white/5">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-[10px] font-bold bg-white/10 text-white px-3 py-1.5 rounded-full uppercase tracking-wider">Ide #{idx + 1}</span>
-                                                    <span className={`text-[10px] font-bold px-2 py-1 rounded text-gray-400 uppercase`}>{getModelStrategy(powerLevel).desc}</span>
+                                                    <span className="bg-white/10 text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wider">#{idx+1}</span>
+                                                    <span className="text-appleGreen text-[10px] font-bold flex items-center gap-1.5 px-2 py-1 rounded bg-appleGreen/10"><i className="fa-solid fa-shield-check"></i> VALIDATED</span>
                                                 </div>
-                                                <i className="fa-solid fa-gem text-gray-600 text-lg group-hover:text-brandBlue transition"></i>
+                                                <button id={`btn-${idx}`} onClick={() => copyToClipboard(prompt, `btn-${idx}`)} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/20 flex items-center justify-center text-white transition active:scale-90 group-hover:bg-white/10"><i className="fa-regular fa-copy"></i></button>
                                             </div>
-                                            <div className="bg-black/40 p-5 rounded-2xl font-mono text-[13px] text-gray-300 leading-relaxed mb-6 select-all border border-white/5">{prompt}</div>
-                                            <div className="flex justify-end">
-                                                <button id={`btn-copy-${idx}`} onClick={() => copyText(prompt, idx)} className="bg-white/10 hover:bg-white text-white hover:text-black px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 group-hover:shadow-lg"><i className="fa-regular fa-copy"></i> Copy Prompt</button>
-                                            </div>
+                                            <div className="font-mono text-xs text-gray-300 leading-loose select-all">{prompt}</div>
                                         </div>
                                     ))
                                 )}
                             </div>
                         </div>
-
                     </div>
-                    <div className="fixed bottom-4 right-4 text-[10px] text-white/20 font-mono">React Engine • Titanium UI</div>
                 </div>
             );
         }
